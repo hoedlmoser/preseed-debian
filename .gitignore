@@ -1,0 +1,6 @@
+ansible
+ansible.pub
+root-password*
+user-password*
+*.iso
+
