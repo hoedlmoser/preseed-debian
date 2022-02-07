@@ -4,11 +4,12 @@ set -e
 
 HOST_NAME="${1:-unassigned-hostname}"
 DOMAIN="${2:-unassigned-domain}"
-PRESEED_FILE="${3:-preseed.cfg}"
-USERNAME="${4:-tux}"
-USER_FULLNAME="${5:-Tux Pinguin}"
-DEBIAN_ISO="${6:-debian-11.2.0-amd64-netinst.iso}"
-PUB_KEY_NAME="${7:-ansible}"
+ADD_CONFIG="${3:-none}"
+PRESEED_FILE="${4:-preseed.cfg}"
+USERNAME="${5:-tux}"
+USER_FULLNAME="${6:-Tux Pinguin}"
+DEBIAN_ISO="${7:-debian-11.2.0-amd64-netinst.iso}"
+PUB_KEY_NAME="${8:-ansible}"
 
 if [[ "${HOST_NAME}" == "unassigned-hostname" || "${DOMAIN}" == "unassigned-domain" ]]; then
   PRESEED_ISO="${DEBIAN_ISO%.iso}-preseed.iso"
@@ -18,6 +19,7 @@ fi
 
 echo "merging preseed"
 echo "host: ${HOST_NAME}.${DOMAIN}"
+echo "addon config: ${ADD_CONFIG}"
 echo "preseed: ${PRESEED_FILE}"
 echo "username: ${USERNAME}"
 echo "user fullname: ${USER_FULLNAME}"
@@ -33,9 +35,11 @@ fi;
 
 if [ ! -f root-password-crypted ]; then
   pwgen --secure --symbols 64 1 | tee root-password | mkpasswd --stdin --method=sha-512 > root-password-crypted
+  chmod go= root-password*
 fi;
 if [ ! -f user-password-crypted ]; then
   pwgen --secure --symbols 64 1 | tee user-password | mkpasswd --stdin --method=sha-512 > user-password-crypted
+  chmod go= user-password*
 fi;
 
 if [ ! -f ${DEBIAN_ISO} ]; then
@@ -63,6 +67,10 @@ sed "s/<SSH_PUBLIC_KEY>/${pub_key}/g; \
      s/<USERNAME>/${USERNAME}/g; \
      s/<USER_FULLNAME>/${USER_FULLNAME}/g; \
 " ${PRESEED_FILE} > ${tempdir}/preseed.cfg
+
+if [ -f ${ADD_CONFIG} ]; then
+  cat ${ADD_CONFIG} >> ${tempdir}/preseed.cfg
+fi
 
 my_pwd=$(pwd)
 cd ${tempdir}

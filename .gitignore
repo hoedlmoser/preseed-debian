@@ -3,4 +3,4 @@ ansible.pub
 root-password*
 user-password*
 *.iso
-
+addon-*.cfg
