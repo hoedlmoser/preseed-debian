@@ -100,5 +100,5 @@ xorriso -as mkisofs -r -V "${volumeid}" \
 	-no-emul-boot -isohybrid-gpt-basdat \
         ${tempdir}
 
-#rm -rf ${tempdir}
+rm -rf ${tempdir}
 
