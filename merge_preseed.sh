@@ -10,6 +10,7 @@ USERNAME="${5:-ansible}"
 USER_FULLNAME="${6:-Ansible}"
 DEBIAN_ISO="${7:-debian-11.2.0-amd64-netinst.iso}"
 PUB_KEY_NAME="${8:-ansible}"
+USER_UID="${9:-20000}"
 
 if [[ "${HOST_NAME}" == "unassigned-hostname" || "${DOMAIN}" == "unassigned-domain" ]]; then
   PRESEED_ISO="${DEBIAN_ISO%.iso}-preseed.iso"
@@ -66,6 +67,7 @@ sed "s/<SSH_PUBLIC_KEY>/${pub_key}/g; \
      s/<USER_PASSWORD_CRYPTED>/${user_password_crypted}/g; \
      s/<USERNAME>/${USERNAME}/g; \
      s/<USER_FULLNAME>/${USER_FULLNAME}/g; \
+     s/<USER_UID>/${USER_UID}/g; \
 " ${PRESEED_FILE} > ${tempdir}/preseed.cfg
 
 if [ -f ${ADD_CONFIG} ]; then
